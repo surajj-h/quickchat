@@ -6,6 +6,7 @@ import { ChatMessageList } from './ChatMessageList';
 import { ChatInput } from './ChatInput';
 import { MemberList } from './MemberList';
 import type { Message, Member } from '../../types';
+import { LeaveRoomDialog } from './LeaveRoomDialog';
 
 interface ChatRoomProps {
   messages: Message[];
@@ -14,6 +15,7 @@ interface ChatRoomProps {
   isPublic: boolean;
   joinUrl?: string;
   onSendMessage: (message: string) => void;
+  onLeaveRoom: () => void;
 }
 
 export const ChatRoom: React.FC<ChatRoomProps> = ({
@@ -23,6 +25,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
   isPublic,
   joinUrl,
   onSendMessage,
+  onLeaveRoom,
 }) => {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -36,12 +39,15 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
                 <MessageSquare size={20} />
                 Chat
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                {isPublic ? (
-                  <Globe size={16} className="text-green-500" />
-                ) : (
-                  <Lock size={16} className="text-yellow-500" />
-                )}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 text-sm">
+                  {isPublic ? (
+                    <Globe size={16} className="text-green-500" />
+                  ) : (
+                    <Lock size={16} className="text-yellow-500" />
+                  )}
+                </div>
+                <LeaveRoomDialog onLeaveRoom={onLeaveRoom} />
               </div>
             </CardTitle>
           </CardHeader>

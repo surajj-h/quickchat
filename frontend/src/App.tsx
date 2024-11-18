@@ -8,6 +8,7 @@ import { useSocket } from './context/SocketContext';
 import { useSocketEvents } from './hooks/useSocket';
 import type { Message, Room, Member } from './types';
 import { JoinRoom } from './components/room/JoinRoom';
+import { useNavigate } from 'react-router-dom'
 
 const App = () => {
   const [userId, setUserId] = useState<string | null>(null);
@@ -17,6 +18,7 @@ const App = () => {
   const [roomMembers, setRoomMembers] = useState<Member[]>([]);
   const [isPublic, setIsPublic] = useState(true);
   const [joinUrl, setJoinUrl] = useState('');
+  const navigate = useNavigate()
 
   const { socket } = useSocket();
 
@@ -31,6 +33,25 @@ const App = () => {
   const handleUserLeft = useCallback((userId: string) => {
     setRoomMembers(prev => prev.filter(member => member.id !== userId));
   }, []);
+
+  const handleLeaveRoom = useCallback(() => {
+    socket.emit('leaveRoom', (response: { success: boolean; message?: string; error?: string }) => {
+      if (response.success) {
+        setCurrentRoom(null);
+        setMessages([]);
+        setRoomMembers([]);
+        setJoinUrl('');
+
+        const url = new URL(window.location.href);
+        url.searchParams.delete('room');
+        window.history.pushState({}, '', url.toString());
+
+        navigate('/');
+      } else {
+        console.error('Failed to leave room:', response.error);
+      }
+    });
+  }, [socket]);
 
   const { sendMessage } = useSocketEvents(
     handleMessage,
@@ -117,6 +138,7 @@ const App = () => {
       isPublic={isPublic}
       joinUrl={joinUrl}
       onSendMessage={sendMessage}
+      onLeaveRoom={handleLeaveRoom}
     />
   );
 };
