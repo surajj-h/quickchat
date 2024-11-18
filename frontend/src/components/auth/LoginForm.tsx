@@ -1,20 +1,26 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Button } from '../ui/button';
+import { useSocket } from '../../context/SocketContext';
 
 interface LoginFormProps {
-  onLogin: (username: string) => void;
+  onLogin: (userId: string) => void;
 }
 
-export const LoginForm = ({ onLogin }: LoginFormProps) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
+  const { socket } = useSocket();
 
-  const handleSubmit = () => {
-    if (username.trim()) {
-      onLogin(username);
-    }
+  const handleRegister = () => {
+    if (!username.trim()) return;
+
+    socket.emit('register', { username }, (response: { success: boolean; userId?: string }) => {
+      if (response.success && response.userId) {
+        onLogin(response.userId);
+      }
+    });
   };
 
   return (
@@ -34,7 +40,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                 placeholder="Your name"
               />
             </div>
-            <Button onClick={handleSubmit} className="w-full">
+            <Button onClick={handleRegister} className="w-full">
               Join Chat
             </Button>
           </div>
