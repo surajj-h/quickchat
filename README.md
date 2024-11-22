@@ -101,4 +101,4 @@ VITE_WS_URL=http://localhost:3000
 
 ## 📫 Contact
 
-Suraj H - [@yourtwitter](https://twitter.com/suraj__h)
+Suraj H - [@suraj__h](https://twitter.com/suraj__h)
